@@ -1,21 +1,23 @@
 import { StatusBar } from 'expo-status-bar';
-import React from 'react';
+import React, {useState, useEffect, useMemo} from 'react';
 import { StyleSheet, Text, View } from 'react-native';
+import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
+import {Button, ThemeProvider} from 'react-native-elements';
 
-export default function App() {
+import Navigation from "./components/NavigationBar";
+import Authentication from "./components/Authentication";
+
+function App() {
+  const [user, setUser] = useState(1);
+  const value = useMemo(()=> ({
+    user, setUser
+  }), [user, setUser]);
+
   return (
-    <View style={styles.container}>
-      <Text>Open up App.tsx to start working on your app!</Text>
-      <StatusBar style="auto" />
-    </View>
-  );
+    <SafeAreaProvider>
+      <Navigation />
+    </SafeAreaProvider>
+  )
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
+export default App;
