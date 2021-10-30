@@ -10,14 +10,21 @@ import FridgeScreen from "./pages/Fridge";
 import RecipeScreen from "./pages/Recipes";
 import LoginScreen from "./pages/Login";
 
-const Tab = createBottomTabNavigator();
+export type RootStackParamList = {
+    Logout: undefined,
+    Groceries: undefined,
+    Fridge: undefined,
+    Recipes: undefined
+}
+
+const Tab = createBottomTabNavigator<RootStackParamList>();
 
 const Navigation = () => {
     return (
         <NavigationContainer>
             <Tab.Navigator initialRouteName="Logout" screenOptions={({ route }) => ({ tabBarIcon: ({ focused, color, size}) => {
                 let iconName;
-                if (route.name === 'Grocery') {
+                if (route.name === 'Groceries') {
                     iconName = focused ? 'view-list' : 'view-list';
                 } else if (route.name === 'Fridge') {
                     iconName = focused ? 'fridge' : 'fridge';
@@ -31,7 +38,7 @@ const Navigation = () => {
             tabBarActiveTintColor: 'tomato',
             tabBarInactiveTintColor: 'gray',
             })}>
-                <Tab.Screen name="Grocery" component={GroceryStack} />
+                <Tab.Screen name="Groceries" component={GroceryStack} />
                 <Tab.Screen name="Fridge" component={FridgeScreen} options={{ tabBarBadge: 3}} />
                 <Tab.Screen name="Recipes" component={RecipeScreen} />
                 <Tab.Screen name="Logout" component={LoginScreen} />
