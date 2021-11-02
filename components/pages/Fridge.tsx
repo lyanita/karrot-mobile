@@ -12,7 +12,10 @@ const FridgeScreen = () => {
             setData(json);
         } catch (error) {
             console.error(error);
-            setData([{"inventory_item_name": "Your fridge is empty"}]);
+            var fridge_dict:any = {}
+            let error_message: string = "Your fridge is empty";
+            fridge_dict["inventory_item_name"] = error_message;
+            setData(fridge_dict);
         } finally {
             setLoading(false);
         }
@@ -28,7 +31,7 @@ const FridgeScreen = () => {
         <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center'}}>
             <Text>Fridge</Text>
             {isLoading ? <ActivityIndicator/> : (
-                <FlatList data={data} keyExtractor={(item) => item.inventory_item_id.toString()/*({id}, index) => id*/} renderItem={({item}) => (
+                <FlatList data={data} keyExtractor={(item:any) => item['inventory_item_id'].toString()/*({id}, index) => id*/} renderItem={({item}) => (
                     <Text>{item.inventory_item_name}, {item.expiry_date}</Text>
                 )}
                 />

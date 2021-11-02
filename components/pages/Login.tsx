@@ -3,7 +3,7 @@ import { Text, View, ScrollView, TextInput, Button, StyleSheet } from 'react-nat
 import * as SecureStore from 'expo-secure-store';
 import { createNativeStackNavigator, NativeStackScreenProps } from '@react-navigation/native-stack';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
-import RootStackParamList from '../NavigationBar';
+import { RootStackParamList } from '../NavigationBar';
 
 const styles = StyleSheet.create({
     container: {

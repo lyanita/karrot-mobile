@@ -1,6 +1,11 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { Text, View, ActivityIndicator, FlatList, TextInput, Button } from 'react-native';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
+import { createNativeStackNavigator, NativeStackScreenProps } from '@react-navigation/native-stack';
+
+import { GroceryStackParamList } from './Groceries';
+
+type GroceryNavigationProp = NativeStackScreenProps<GroceryStackParamList, 'Search'>;
 
 const SearchScreen = () => {
     const [search, setSearch] = React.useState('');

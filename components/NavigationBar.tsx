@@ -23,7 +23,7 @@ const Navigation = () => {
     return (
         <NavigationContainer>
             <Tab.Navigator initialRouteName="Logout" screenOptions={({ route }) => ({ tabBarIcon: ({ focused, color, size}) => {
-                let iconName;
+                let iconName: any;
                 if (route.name === 'Groceries') {
                     iconName = focused ? 'view-list' : 'view-list';
                 } else if (route.name === 'Fridge') {
@@ -33,7 +33,7 @@ const Navigation = () => {
                 } else if (route.name === 'Logout') {
                     iconName = focused ? 'logout' : 'logout';
                 }
-                return <MaterialCommumityIcons name={iconName} size={size} color={color} />;
+                return <MaterialCommumityIcons name={iconName!} size={size} color={color} />;
             },
             tabBarActiveTintColor: 'tomato',
             tabBarInactiveTintColor: 'gray',
