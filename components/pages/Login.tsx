@@ -27,15 +27,21 @@ const LoginScreen = ({ navigation }: ScreenNavigationProp) => {
     //const user = useSelector((state:any) => state.user);
     //console.log(user);
     const dispatch = useDispatch();
+    const [error, setError] = React.useState('');
     
     const verifyUser = async (email:any) => {
         try {
             const response = await axios.get(`https://food-ping.herokuapp.com/getUser?email=${email}`);
             console.log(response);
             let res:any = response;
-            dispatch(updateUser(res['data'][0]));
+            if (res['data'].length > 0) {
+                dispatch(updateUser(res['data'][0]));
+            } else {
+                setError('Username/Email invalid. Please try again.');
+            }
         } catch (error) {
             console.error(error);
+            setError(error);
         } finally {
             //console.log(userID);
         }

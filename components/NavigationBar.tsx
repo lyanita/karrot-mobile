@@ -1,4 +1,4 @@
-import React, { useContext, useState, useReducer } from 'react';
+import React, { useContext, useState, useReducer, useEffect } from 'react';
 import { Text, View, TextInput, Button } from 'react-native';
 import { NavigationContainer, DefaultTheme } from '@react-navigation/native';
 import { createNativeStackNavigator, NativeStackScreenProps } from '@react-navigation/native-stack';
@@ -33,8 +33,14 @@ const Stack = createNativeStackNavigator();
 
 const Navigation = () => {
     const [login, setLogin] = useState(false);
+    const dispatch = useDispatch();
     const user = useSelector((state:any) => state.user);
     console.log(user);
+    const test = user[0].id > 0 ? true : false;
+
+    useEffect(() => {
+        setLogin(test);
+    });
 
     return (
         login ? <NavigationContainer theme={containerTheme}>
@@ -59,8 +65,9 @@ const Navigation = () => {
                 <Tab.Screen name="Recipes" component={RecipeScreen} />
                 <Tab.Screen name="Logout" component={LoginScreen} 
                     listeners={{tabPress: (e) => {
-                        e.preventDefault(); 
-                        setLogin(false);
+                        e.preventDefault();
+                        dispatch(updateUser([{email:'', user_id: 0}])); 
+                        //setLogin(false);
                     }}}
                 />
             </Tab.Navigator>
