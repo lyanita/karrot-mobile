@@ -3,20 +3,21 @@ import React, {useState, useEffect, useMemo} from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 import {Button, ThemeProvider} from 'react-native-elements';
+import { Provider, connect } from "react-redux";
+import { createStore } from 'redux';
 
 import Navigation from "./components/NavigationBar";
-import Authentication from "./components/Authentication";
+import userApp from './components/redux/authenticate';
+
+const store = createStore(userApp);
 
 function App() {
-  const [user, setUser] = useState(1);
-  const value = useMemo(()=> ({
-    user, setUser
-  }), [user, setUser]);
-
   return (
-    <SafeAreaProvider>
-      <Navigation />
-    </SafeAreaProvider>
+    <Provider store={store}>
+      <SafeAreaProvider>
+        <Navigation />
+      </SafeAreaProvider>
+    </Provider>
   )
 }
 
