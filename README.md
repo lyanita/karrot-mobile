@@ -6,10 +6,10 @@ A mobile application that makes it easy for millennial home cooks to create a gr
 
 ## Technologies
 
-- Front-end: React-Native
+- Front-end: React-Native, Redux
 - Back-end: Node.js, Express
 - Database: Postgresql
-- Hosting: Heroku
+- Server: Heroku
 
 ## Installation
 1. Clone the repository
