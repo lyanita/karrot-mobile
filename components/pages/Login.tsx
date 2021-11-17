@@ -1,9 +1,12 @@
-import React, { useContext } from 'react';
+import React, { useContext, useEffect } from 'react';
 import { Text, View, ScrollView, TextInput, Button, StyleSheet } from 'react-native';
 import * as SecureStore from 'expo-secure-store';
 import { createNativeStackNavigator, NativeStackScreenProps } from '@react-navigation/native-stack';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 import { RootStackParamList } from '../NavigationBar';
+import axios from 'axios';
+
+import { useLinkProps } from '@react-navigation/native';
 
 const styles = StyleSheet.create({
     container: {
@@ -17,12 +20,25 @@ const styles = StyleSheet.create({
 });
 
 type ScreenNavigationProp = NativeStackScreenProps<RootStackParamList, 'Groceries'>;
-//const AuthContext = React.createContext();
 const Stack = createNativeStackNavigator();
 
 const LoginScreen = ({ navigation }: ScreenNavigationProp) => {
     const [username, setUsername] = React.useState('');
-    //const { signIn } = React.useContext(AuthContext);
+    const [userID, setUserID] = React.useState('');
+    
+    const verifyUser = async (email:any) => {
+        try {
+            const response = await axios.get(`https://food-ping.herokuapp.com/getUser?email=${email}`);
+            console.log(response);
+            let res:any = response;
+            setUserID(res['data'][0]['user_id']);
+        } catch (error) {
+            console.error(error);
+        } finally {
+            console.log(userID);
+        }
+    }
+    
     return (
         <ScrollView>
         <SafeAreaView>
@@ -33,7 +49,7 @@ const LoginScreen = ({ navigation }: ScreenNavigationProp) => {
                 onChangeText={setUsername}
                 style={styles.container}
             />
-            <Button color='#2A9D8F' accessibilityLabel="Click to Login." title="Sign in" onPress={() => /*signIn({username})*/ console.log('Sign in')} />
+            <Button color='#2A9D8F' accessibilityLabel="Click to Login." title="Sign in" onPress={() => verifyUser(username)} />
         </View>
         </SafeAreaView>
         </ScrollView>
