@@ -5,14 +5,14 @@ import { createNativeStackNavigator, NativeStackScreenProps } from '@react-navig
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 import { RootStackParamList } from '../NavigationBar';
 import axios from 'axios';
-
+import { useSelector, useDispatch } from 'react-redux';
 import { useLinkProps } from '@react-navigation/native';
+
+import { updateUser } from '../redux/authenticate';
 
 const styles = StyleSheet.create({
     container: {
         backgroundColor: '#FFFFFF',
-        //border: '1px solid #C2D1D9',
-        //boxSizing: 'border-box',
         borderRadius: 3,
         height: 41,
         width: 299
@@ -24,18 +24,20 @@ const Stack = createNativeStackNavigator();
 
 const LoginScreen = ({ navigation }: ScreenNavigationProp) => {
     const [username, setUsername] = React.useState('');
-    const [userID, setUserID] = React.useState('');
+    //const user = useSelector((state:any) => state.user);
+    //console.log(user);
+    const dispatch = useDispatch();
     
     const verifyUser = async (email:any) => {
         try {
             const response = await axios.get(`https://food-ping.herokuapp.com/getUser?email=${email}`);
             console.log(response);
             let res:any = response;
-            setUserID(res['data'][0]['user_id']);
+            dispatch(updateUser(res['data'][0]));
         } catch (error) {
             console.error(error);
         } finally {
-            console.log(userID);
+            //console.log(userID);
         }
     }
     

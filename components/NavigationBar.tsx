@@ -5,11 +5,13 @@ import { createNativeStackNavigator, NativeStackScreenProps } from '@react-navig
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 import MaterialCommumityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import { useSelector, useDispatch } from 'react-redux';
 
 import GroceryStack from "./pages/Groceries";
 import FridgeScreen from "./pages/Fridge";
 import RecipeScreen from "./pages/Recipes";
 import LoginScreen from "./pages/Login";
+import { updateUser } from './redux/authenticate';
 
 const containerTheme = {
     ...DefaultTheme,
@@ -31,6 +33,8 @@ const Stack = createNativeStackNavigator();
 
 const Navigation = () => {
     const [login, setLogin] = useState(false);
+    const user = useSelector((state:any) => state.user);
+    console.log(user);
 
     return (
         login ? <NavigationContainer theme={containerTheme}>
