@@ -1,18 +1,17 @@
-import { createNativeStackNavigator, NativeStackScreenProps } from '@react-navigation/native-stack';
-import { useRoute } from '@react-navigation/native';
 import React, { useCallback, useContext, useEffect, useState } from 'react';
 import { Text, View, ScrollView, ActivityIndicator, FlatList, TextInput, Button, StyleSheet, TouchableOpacity } from 'react-native';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
+import { createNativeStackNavigator, NativeStackScreenProps } from '@react-navigation/native-stack';
 import {CheckBox, ThemeProvider} from 'react-native-elements';
+import Svg, {Circle, Rect, Line} from 'react-native-svg';
 import axios from 'axios';
 
 import SearchScreen from './Search';
-import { deleteItemAsync } from 'expo-secure-store';
 import { RootStackParamList } from '../NavigationBar';
 
 const styles = StyleSheet.create({
     container: {
-        backgroundColor: '#FFFFFF',
+        backgroundColor: '#EFF2F4',
         //border: '1px solid #C2D1D9',
         //boxSizing: 'border-box',
         borderRadius: 3,
@@ -27,19 +26,19 @@ const Stack = createNativeStackNavigator();
 
 const GroceryStack = () => {
     return (
-        <Stack.Navigator>
-            <Stack.Screen name="Groceries" component={GroceryScreen} />
+        <Stack.Navigator screenOptions={{headerShown: false}}>
+            <Stack.Screen name="List" component={GroceryScreen} />
             <Stack.Screen name="Search" component={SearchScreen} />
         </Stack.Navigator>
     )
 }
 
 export type GroceryStackParamList = {
-    Groceries: undefined,
+    List: undefined,
     Search: undefined
 }
 
-type GroceryNavigationProp = NativeStackScreenProps<GroceryStackParamList, 'Groceries'>;
+type GroceryNavigationProp = NativeStackScreenProps<GroceryStackParamList, 'List'>;
 
 const GroceryScreen = ({ navigation }: any) => {
     const [isLoading, setLoading] = useState(true);
@@ -47,9 +46,20 @@ const GroceryScreen = ({ navigation }: any) => {
     const [checkedItems, setCheckedItems] = useState([]);
     const getData = async() => {
         try {
-            const response = await fetch('https://food-ping.herokuapp.com/getGroceries?user_id=1');
+            const response = await fetch('https://food-ping.herokuapp.com/getGroceries?user_id=3');
             const json = await response.json();
+            console.log(json);
             setData(json);
+            let checked: any = {};
+            json.forEach((element:any) => {
+                if (element['grocery_tag'] === "not bought") {
+                    checked[element['grocery_item_id']] = false;
+                } else if (element['grocery_tag'] === "bought") {
+                    checked[element['grocery_item_id']] = true;
+                }
+            });
+            console.log(checked);
+            setCheckedItems(checked);
         } catch (error) {
             console.error(error);
             var grocery_dict:any = {}
@@ -61,57 +71,103 @@ const GroceryScreen = ({ navigation }: any) => {
         }
     }
 
-    const handleChange = useCallback((item) => {
+    const handleChange = useCallback(async (item) => {
         console.log(item);
-        const id = item.grocery_item_id;
-        //console.log(...checkedItems);
-        let items:any[] = [...checkedItems];
-        console.log(items);
-        setCheckedItems((prevState) => ({
-            ...prevState, id: 'isChecked'
-        }));
-        console.log(items);
-        //items[index].isChecked = e.target.checked;
-        //setCheckedItems(items);
+        const item_id = item.grocery_item_id;
+        const user_id = item.user_id;
+        console.log(checkedItems);
+        let currentItems:any = checkedItems
+        let checkedState = currentItems[item_id]
+        console.log(checkedState);
+        let tag = checkedState ? 'not bought':'bought';
+        try {
+            const response = await axios.put(`https://food-ping.herokuapp.com/editGroceryTag?tag=${tag}&user_id=${user_id}&item_id=${item_id}`);
+        } catch (error) {
+            console.error(error);
+        } finally {
+            setCheckedItems((prevState) => ({
+                ...prevState, item_id: !checkedState
+            }));
+            getData();
+        }
     }, [checkedItems]);
 
-    const deleteItem = async (user_id:any, item_id:any) => {
+    const deleteItem = async (user_id:number, item_id:number) => {
         try {
             const response = await axios.put(`https://food-ping.herokuapp.com/editDisplayTag?tag=deleted&user_id=${user_id}&item_id=${item_id}`);
             console.log(response);
         } catch (error) {
             console.error(error);
         } finally {
-
+            getData();
         }
     }
 
-    const deleteAll = async () => {
+    const deleteAll = async (user_id:number) => {
         console.log(data);
+        let grocery_data = data.filter((item) => item['display_tag'] === 'not deleted');
+        console.log(grocery_data);
+        let ids_arr = grocery_data.map(item => item['grocery_item_id']);
+        console.log(ids_arr);
+        let item_ids = ids_arr.join();
+        try {
+            const response = await axios.put(`https://food-ping.herokuapp.com/editDisplayTag?tag=deleted&user_id=${user_id}&item_id=${item_ids}`);
+            console.log(response);
+        } catch (error) {
+            console.error(error);
+        } finally {
+            getData();
+        }
     }
 
     useEffect(() => {
         getData();
     }, []);
 
+    useEffect(() => {
+        console.log("Testing");
+    }, [checkedItems]);
+
     return (
         <ScrollView>
         <SafeAreaView>
         <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center'}}>
-            <Button color='#2A9D8F' accessibilityLabel="Click to Add Item." title="ADD ITEM" onPress={() => navigation.navigate('Search')} />
-            <Button color='#e76f51' accessibilityLabel="Click to Delete All Items." title="DELETE ALL" onPress={() => deleteAll()} />
-            <Text>Grocery</Text>
+            <View style={{flexDirection:"row"}}>
+                <View style={{flex:1, marginRight:5}}>
+                    <TouchableOpacity style={{backgroundColor:'#EAF5F5', width:128, height:41, borderRadius:20, borderWidth:1, borderColor:"#2A9D8F", justifyContent:"center"}} accessibilityLabel="Click to Add Item." onPress={() => navigation.navigate('Search')}>
+                        <Text style={{textAlign:"center", color:"#2A9D8F", fontStyle: "normal", fontWeight:"bold", fontFamily:"Inter", fontSize:13, lineHeight:18, alignItems:"center"}}>ADD ITEM</Text>
+                    </TouchableOpacity>
+                </View>
+                <View style={{flex:1, marginLeft:5}}>
+                    <TouchableOpacity style={{backgroundColor:'#FFEDE9', width:128, height:41, borderRadius:20, borderWidth:1, borderColor:"#E76F51", justifyContent:"center"}} accessibilityLabel="Click to Delete All Items." onPress={() => deleteAll(4)}>
+                        <Text style={{textAlign:"center", color:"#E76F51", fontStyle: "normal", fontWeight:"bold", fontFamily:"Inter", fontSize:13, lineHeight:18, alignItems:"center"}}>DELETE ALL</Text>
+                    </TouchableOpacity>
+                </View>
+            </View>
             {isLoading ? <ActivityIndicator/> : (
                 <FlatList data={data.filter((item) => item['display_tag'] === 'not deleted')} keyExtractor={(item:any) => item['grocery_item_id'].toString()} renderItem={({item, index}) => {
                     return (
-                        <View>
+                        <View style={{flexDirection:"row"}}>
                             <CheckBox 
                                 title={item['grocery_item_name']}
                                 /*status={item['grocery_tag'] ? 'bought': 'not bought'}*/
-                                onPress={() => handleChange(item)}>
+                                onPress={() => handleChange(item)}
+                                checked={checkedItems[item.grocery_item_id]}
+                                style={{flex:1}}
+                                uncheckedIcon={<Svg width="19" height="19" viewBox="0 0 19 19" fill="none" /*xmlns="http://www.w3.org/2000/svg"*/>
+                                    <Circle cx="9.5" cy="9.5" r="9" fill="white" stroke="#2A9D8F"/>
+                                </Svg>}
+                                checkedIcon={<Svg width="19" height="19" viewBox="0 0 19 19" fill="none" /*xmlns="http://www.w3.org/2000/svg"*/>
+                                    <Circle cx="9.5" cy="9.5" r="9" fill="#2A9D8F" stroke="#2A9D8F"/>
+                                        <Rect width="6.71535" height="2.77135" rx="1.38567" transform="matrix(0.816833 0.576874 -0.548666 0.836042 4.74023 9.70703)" fill="white"/>
+                                        <Rect width="12.4565" height="2.43489" rx="1.21744" transform="matrix(0.53413 -0.845402 0.826606 0.56278 6.73438 14.5308)" fill="white"/>
+                                </Svg>}>
                             </CheckBox>
-                            <TouchableOpacity onPress={() => deleteItem(item['user_id'], item['grocery_item_id'],)}>
-                                <Text>X</Text>
+                            <TouchableOpacity style={{flex:1, justifyContent:"center"}} onPress={() => deleteItem(item['user_id'], item['grocery_item_id'],)}>
+                                <Svg width="16" height="15" viewBox="0 0 16 15" fill="none" /*xmlns="http://www.w3.org/2000/svg"*/>
+                                    <Line x1="13.7027" y1="1.4106" x2="2.41794" y2="12.7531" stroke="#2A9D8F" strokeWidth="4"/>
+                                    <Line x1="13.7315" y1="12.7245" x2="2.38894" y2="1.43967" stroke="#2A9D8F" strokeWidth="4"/>
+                                </Svg>
                             </TouchableOpacity>
                         </View>
                     );
