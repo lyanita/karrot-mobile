@@ -5,6 +5,7 @@ import { createNativeStackNavigator, NativeStackScreenProps } from '@react-navig
 import {CheckBox, ThemeContext, ThemeProvider} from 'react-native-elements';
 import Svg, {Circle, Rect, Line} from 'react-native-svg';
 import axios from 'axios';
+import { useSelector, useDispatch } from 'react-redux';
 
 import { GroceryStackParamList } from './Groceries';
 
@@ -16,12 +17,13 @@ const SearchScreen = () => {
     const [data, setData] = useState([]);
     const [suggestions, setSuggestions] = useState([]);
     const [itemID, setItemID] = useState('');
+    const user = useSelector((state:any) => state.user);
+    let user_id = user[0].id;
     const getData = async() => {
         try {
             const response:any = await axios.get('https://food-ping.herokuapp.com/searchItem', {
                 params: { item: "fresh" },
               });
-            //const json = await response;
             console.log(response['data']);
             setData(response['data']);
             setSuggestions(response['data']);
@@ -54,7 +56,7 @@ const SearchScreen = () => {
         setSuggestions([]);
     }
 
-    const addGroceryItem = async (item_name:string, user_id:string, query_id:string) => {
+    const addGroceryItem = async (item_name:string, query_id:string) => {
         try {
             const response = await axios.post(`https://food-ping.herokuapp.com/addGroceryItem?user_id=${user_id}&item_name=${item_name}&query_id=${query_id}`);
             console.log(response);
@@ -91,7 +93,7 @@ const SearchScreen = () => {
                         </View>
                     </View>
                     <View style={{flex:1, justifyContent: 'center', alignItems: 'center', width:71, height:43}}>
-                        <TouchableOpacity style={{backgroundColor: '#FFEDE9', width: 71, height: 43, borderRadius: 5, borderWidth: 1, borderColor: "#E76F51", justifyContent: "center", alignItems: 'center'}} accessibilityLabel="Click to Add an Item." onPress={() => addGroceryItem(search, '3', itemID)}>
+                        <TouchableOpacity style={{backgroundColor: '#FFEDE9', width: 71, height: 43, borderRadius: 5, borderWidth: 1, borderColor: "#E76F51", justifyContent: "center", alignItems: 'center'}} accessibilityLabel="Click to Add an Item." onPress={() => addGroceryItem(search, itemID)}>
                             <Text style={{textAlign: "center", color: "#E76F51", fontStyle: "normal", fontWeight: "bold", fontFamily: "Inter", fontSize: 13, lineHeight: 18, alignItems: "center"}}>ADD</Text>
                         </TouchableOpacity>
                     </View>

@@ -5,6 +5,7 @@ import { createNativeStackNavigator, NativeStackScreenProps } from '@react-navig
 import {CheckBox, ThemeProvider} from 'react-native-elements';
 import Svg, {Circle, Rect, Line} from 'react-native-svg';
 import axios from 'axios';
+import { useSelector, useDispatch } from 'react-redux';
 
 import SearchScreen from './Search';
 import { RootStackParamList } from '../NavigationBar';
@@ -44,9 +45,11 @@ const GroceryScreen = ({ navigation }: any) => {
     const [isLoading, setLoading] = useState(true);
     const [data, setData] = useState([]);
     const [checkedItems, setCheckedItems] = useState([]);
+    const user = useSelector((state:any) => state.user);
+    let user_id = user[0].id;
     const getData = async() => {
         try {
-            const response = await fetch('https://food-ping.herokuapp.com/getGroceries?user_id=3');
+            const response = await fetch(`https://food-ping.herokuapp.com/getGroceries?user_id=${user_id}`);
             const json = await response.json();
             console.log(json);
             setData(json);
@@ -103,13 +106,14 @@ const GroceryScreen = ({ navigation }: any) => {
         }
     }
 
-    const deleteAll = async (user_id:number) => {
+    const deleteAll = async () => {
         console.log(data);
         let grocery_data = data.filter((item) => item['display_tag'] === 'not deleted');
         console.log(grocery_data);
         let ids_arr = grocery_data.map(item => item['grocery_item_id']);
         console.log(ids_arr);
         let item_ids = ids_arr.join();
+        console.log(item_ids);
         try {
             const response = await axios.put(`https://food-ping.herokuapp.com/editDisplayTag?tag=deleted&user_id=${user_id}&item_id=${item_ids}`);
             console.log(response);
@@ -139,7 +143,7 @@ const GroceryScreen = ({ navigation }: any) => {
                     </TouchableOpacity>
                 </View>
                 <View style={{flex:1, marginLeft:5}}>
-                    <TouchableOpacity style={{backgroundColor:'#FFEDE9', width:128, height:41, borderRadius:20, borderWidth:1, borderColor:"#E76F51", justifyContent:"center"}} accessibilityLabel="Click to Delete All Items." onPress={() => deleteAll(4)}>
+                    <TouchableOpacity style={{backgroundColor:'#FFEDE9', width:128, height:41, borderRadius:20, borderWidth:1, borderColor:"#E76F51", justifyContent:"center"}} accessibilityLabel="Click to Delete All Items." onPress={() => deleteAll()}>
                         <Text style={{textAlign:"center", color:"#E76F51", fontStyle: "normal", fontWeight:"bold", fontFamily:"Inter", fontSize:13, lineHeight:18, alignItems:"center"}}>DELETE ALL</Text>
                     </TouchableOpacity>
                 </View>
