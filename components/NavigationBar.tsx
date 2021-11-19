@@ -1,11 +1,11 @@
-import React, { useContext, useState, useReducer, useEffect } from 'react';
-import { Text, View, TextInput, Button } from 'react-native';
-import { NavigationContainer, DefaultTheme } from '@react-navigation/native';
+import React, { useCallback, useContext, useEffect, useRef, useState, useMemo } from 'react';
+import { Text, View, ScrollView, ActivityIndicator, FlatList, TextInput, Button, StyleSheet, TouchableOpacity, TouchableWithoutFeedback } from 'react-native';
+import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 import { createNativeStackNavigator, NativeStackScreenProps } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
-import MaterialCommumityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { useSelector, useDispatch } from 'react-redux';
+import { NavigationContainer, DefaultTheme } from '@react-navigation/native';
+import MaterialCommumityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
 import GroceryStack from "./pages/Groceries";
 import FridgeScreen from "./pages/Fridge";

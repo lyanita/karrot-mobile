@@ -1,20 +1,23 @@
-import React, { useCallback, useContext, useEffect, useState } from 'react';
+import React, { useCallback, useContext, useEffect, useRef, useState, useMemo } from 'react';
 import { Text, View, ScrollView, ActivityIndicator, FlatList, TextInput, Button, StyleSheet, TouchableOpacity, TouchableWithoutFeedback } from 'react-native';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 import { createNativeStackNavigator, NativeStackScreenProps } from '@react-navigation/native-stack';
+import { useSelector, useDispatch } from 'react-redux';
 import {CheckBox, ThemeContext, ThemeProvider} from 'react-native-elements';
 import Svg, {Circle, Rect, Line} from 'react-native-svg';
 import axios from 'axios';
-import { useSelector, useDispatch } from 'react-redux';
 
 import { GroceryStackParamList } from './Groceries';
 
 type GroceryNavigationProp = NativeStackScreenProps<GroceryStackParamList, 'Search'>;
 
 const SearchScreen = () => {
+    const [data, setData] = useState([]);
+    useEffect(() => {
+        getData();
+    }, []);
     const [search, setSearch] = React.useState('');
     const [isLoading, setLoading] = useState(true);
-    const [data, setData] = useState([]);
     const [suggestions, setSuggestions] = useState([]);
     const [itemID, setItemID] = useState('');
     const user = useSelector((state:any) => state.user);
@@ -67,10 +70,6 @@ const SearchScreen = () => {
         }
     }
 
-    useEffect(() => {
-        getData();
-    }, []);
-
     return (
         <ScrollView>
         <SafeAreaView>
@@ -78,7 +77,7 @@ const SearchScreen = () => {
                 <View style={{flexDirection: "row", justifyContent: 'center', alignItems: 'center', width: 355}}>
                     <View style={{flexDirection: "row", flex: 4, width: 280, height: 44, borderRadius: 5, backgroundColor: "#F5F5F5"}}>
                         <View style={{flex:1, justifyContent: 'center'}}>
-                            <Svg width="18" height="20" viewBox="0 0 18 20" fill="none" /*xmlns="http://www.w3.org/2000/svg"*/>
+                            <Svg width="18" height="20" viewBox="0 0 18 20" fill="none">
                                 <Circle cx="7" cy="7" r="6" stroke="#A1AEB7" strokeWidth="2"/>
                                 <Line x1="11.4142" y1="12" x2="15" y2="15.5858" stroke="#A1AEB7" strokeWidth="2" strokeLinecap="round"/>
                             </Svg>
@@ -93,7 +92,8 @@ const SearchScreen = () => {
                         </View>
                     </View>
                     <View style={{flex:1, justifyContent: 'center', alignItems: 'center', width:71, height:43}}>
-                        <TouchableOpacity style={{backgroundColor: '#FFEDE9', width: 71, height: 43, borderRadius: 5, borderWidth: 1, borderColor: "#E76F51", justifyContent: "center", alignItems: 'center'}} accessibilityLabel="Click to Add an Item." onPress={() => addGroceryItem(search, itemID)}>
+                        <TouchableOpacity style={{backgroundColor: '#FFEDE9', width: 71, height: 43, borderRadius: 5, borderWidth: 1, borderColor: "#E76F51", justifyContent: "center", alignItems: 'center'}} 
+                            accessibilityLabel="Click to Add an Item." onPress={() => addGroceryItem(search, itemID)}>
                             <Text style={{textAlign: "center", color: "#E76F51", fontStyle: "normal", fontWeight: "bold", fontFamily: "Inter", fontSize: 13, lineHeight: 18, alignItems: "center"}}>ADD</Text>
                         </TouchableOpacity>
                     </View>
@@ -114,8 +114,12 @@ const SearchScreen = () => {
                 }}/>
                 </View>
                 <View style={{justifyContent: "center", alignItems: "center"}}>
-                    <Text style={{fontFamily: "Inter", fontStyle: "normal", fontWeight: "500", fontSize: 15, lineHeight: 38, display: "flex", alignItems: "center", textAlign: "center", color: "#424B5A"}}>Search for items to add</Text>
-                    <Text style={{fontFamily: "Inter", fontStyle: "normal", fontWeight: "normal", fontSize: 12, lineHeight: 18, display: "flex", alignItems: "center", textAlign: "center", color: "#C2D1D9"}}>Tap on the search bar to look for ingredients</Text>
+                    <Text style={{fontFamily: "Inter", fontStyle: "normal", fontWeight: "500", fontSize: 15, lineHeight: 38, display: "flex", alignItems: "center", textAlign: "center", color: "#424B5A"}}>
+                        Search for items to add
+                    </Text>
+                    <Text style={{fontFamily: "Inter", fontStyle: "normal", fontWeight: "normal", fontSize: 12, lineHeight: 18, display: "flex", alignItems: "center", textAlign: "center", color: "#C2D1D9"}}>
+                        Tap on the search bar to look for ingredients
+                    </Text>
                 </View>
             </View>
         </SafeAreaView>

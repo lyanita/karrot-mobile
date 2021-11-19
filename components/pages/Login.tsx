@@ -1,13 +1,11 @@
-import React, { useContext, useEffect } from 'react';
-import { Text, View, ScrollView, TextInput, Button, StyleSheet } from 'react-native';
-import * as SecureStore from 'expo-secure-store';
-import { createNativeStackNavigator, NativeStackScreenProps } from '@react-navigation/native-stack';
+import React, { useCallback, useContext, useEffect, useRef, useState, useMemo } from 'react';
+import { Text, View, ScrollView, ActivityIndicator, FlatList, TextInput, Button, StyleSheet, TouchableOpacity, TouchableWithoutFeedback } from 'react-native';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
-import { RootStackParamList } from '../NavigationBar';
-import axios from 'axios';
+import { createNativeStackNavigator, NativeStackScreenProps } from '@react-navigation/native-stack';
 import { useSelector, useDispatch } from 'react-redux';
-import { useLinkProps } from '@react-navigation/native';
+import axios from 'axios';
 
+import { RootStackParamList } from '../NavigationBar';
 import { updateUser } from '../redux/authenticate';
 
 const styles = StyleSheet.create({
@@ -23,11 +21,9 @@ type ScreenNavigationProp = NativeStackScreenProps<RootStackParamList, 'Grocerie
 const Stack = createNativeStackNavigator();
 
 const LoginScreen = ({ navigation }: ScreenNavigationProp) => {
-    const [username, setUsername] = React.useState('');
-    //const user = useSelector((state:any) => state.user);
-    //console.log(user);
-    const dispatch = useDispatch();
     const [error, setError] = React.useState('');
+    const [username, setUsername] = React.useState('');
+    const dispatch = useDispatch();
     
     const verifyUser = async (email:any) => {
         try {
@@ -39,13 +35,17 @@ const LoginScreen = ({ navigation }: ScreenNavigationProp) => {
             } else {
                 setError('Username/Email invalid. Please try again.');
             }
-        } catch (error) {
+        } catch (error:any) {
             console.error(error);
             setError(error);
         } finally {
-            //console.log(userID);
+            
         }
     }
+
+    useEffect(() => {
+        console.log(error);
+    },[]);
     
     return (
         <ScrollView>
@@ -58,6 +58,7 @@ const LoginScreen = ({ navigation }: ScreenNavigationProp) => {
                 style={styles.container}
             />
             <Button color='#2A9D8F' accessibilityLabel="Click to Login." title="Sign in" onPress={() => verifyUser(username)} />
+            <Text>{error}</Text>
         </View>
         </SafeAreaView>
         </ScrollView>
