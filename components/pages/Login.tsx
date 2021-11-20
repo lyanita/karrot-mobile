@@ -17,11 +17,19 @@ const styles = StyleSheet.create({
     }
 });
 
-type ScreenNavigationProp = NativeStackScreenProps<RootStackParamList, 'Groceries'>;
+type ScreenNavigationProp = NativeStackScreenProps<RootStackParamList, 'Logout'>;
 const Stack = createNativeStackNavigator();
 
 const LoginScreen = ({ navigation }: ScreenNavigationProp) => {
     const [error, setError] = React.useState('');
+    const firstRender = useRef(true);
+    useEffect(() => {
+        if (firstRender.current) {
+            firstRender.current = false;
+            return;
+        }
+        console.log(error);
+    },[]);
     const [username, setUsername] = React.useState('');
     const dispatch = useDispatch();
     
@@ -42,10 +50,6 @@ const LoginScreen = ({ navigation }: ScreenNavigationProp) => {
             
         }
     }
-
-    useEffect(() => {
-        console.log(error);
-    },[]);
     
     return (
         <ScrollView>

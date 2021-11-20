@@ -45,7 +45,12 @@ const GroceryScreen = ({ navigation }: any) => {
         getData();
     }, []);
     const [checkedItems, setCheckedItems] = useState([]);
+    const firstRender = useRef(true);
     useEffect(() => {
+        if (firstRender.current) {
+            firstRender.current = false;
+            return;
+        }
         console.log(checkedItems);
     }, [checkedItems]);
     const [isLoading, setLoading] = useState(true);
@@ -79,11 +84,12 @@ const GroceryScreen = ({ navigation }: any) => {
     const handleChange = useCallback(async (item) => {
         const item_id = item.grocery_item_id;
         const user_id = item.user_id;
-        let currentItems:any = checkedItems
-        let checkedState = currentItems[item_id]
+        let currentItems:any = checkedItems;
+        let checkedState = currentItems[item_id];
         let tag = checkedState ? 'not bought':'bought';
         try {
             const response = await axios.put(`https://food-ping.herokuapp.com/editGroceryTag?tag=${tag}&user_id=${user_id}&item_id=${item_id}`);
+            console.log(response);
         } catch (error) {
             console.error(error);
         } finally {
@@ -126,7 +132,7 @@ const GroceryScreen = ({ navigation }: any) => {
             <View style={{flexDirection:"row"}}>
                 <View style={{flex:1, marginRight:5}}>
                     <TouchableOpacity style={{backgroundColor:'#EAF5F5', width:128, height:41, borderRadius:20, borderWidth:1, borderColor:"#2A9D8F", justifyContent:"center"}} 
-                        accessibilityLabel="Click to Add Item." onPress={() => navigation.navigate('Search')}>
+                    accessibilityLabel="Click to Add Item." onPress={() => navigation.navigate('Search')}>
                         <Text style={{textAlign:"center", color:"#2A9D8F", fontStyle: "normal", fontWeight:"bold", fontFamily:"Inter", fontSize:13, lineHeight:18, alignItems:"center"}}>
                             ADD ITEM
                         </Text>
@@ -134,7 +140,7 @@ const GroceryScreen = ({ navigation }: any) => {
                 </View>
                 <View style={{flex:1, marginLeft:5}}>
                     <TouchableOpacity style={{backgroundColor:'#FFEDE9', width:128, height:41, borderRadius:20, borderWidth:1, borderColor:"#E76F51", justifyContent:"center"}} 
-                        accessibilityLabel="Click to Delete All Items." onPress={() => deleteAll()}>
+                    accessibilityLabel="Click to Delete All Items." onPress={() => deleteAll()}>
                         <Text style={{textAlign:"center", color:"#E76F51", fontStyle: "normal", fontWeight:"bold", fontFamily:"Inter", fontSize:13, lineHeight:18, alignItems:"center"}}>
                             DELETE ALL
                         </Text>
