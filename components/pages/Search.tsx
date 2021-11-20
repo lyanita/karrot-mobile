@@ -93,8 +93,10 @@ const SearchScreen = () => {
                     </View>
                     <View style={{flex:1, justifyContent: 'center', alignItems: 'center', width:71, height:43}}>
                         <TouchableOpacity style={{backgroundColor: '#FFEDE9', width: 71, height: 43, borderRadius: 5, borderWidth: 1, borderColor: "#E76F51", justifyContent: "center", alignItems: 'center'}} 
-                            accessibilityLabel="Click to Add an Item." onPress={() => addGroceryItem(search, itemID)}>
-                            <Text style={{textAlign: "center", color: "#E76F51", fontStyle: "normal", fontWeight: "bold", fontFamily: "Inter", fontSize: 13, lineHeight: 18, alignItems: "center"}}>ADD</Text>
+                        accessibilityLabel="Click to Add an Item." onPress={() => addGroceryItem(search, itemID)}>
+                            <Text style={{textAlign: "center", color: "#E76F51", fontStyle: "normal", fontWeight: "bold", fontFamily: "Inter", fontSize: 13, lineHeight: 18, alignItems: "center"}}>
+                                ADD
+                            </Text>
                         </TouchableOpacity>
                     </View>
                 </View>
@@ -104,7 +106,8 @@ const SearchScreen = () => {
                         <View style={{backgroundColor: "#F0F0F0", width: 280, height: 55}}>
                         <TouchableWithoutFeedback style={{backgroundColor: "#F0F0F0", width: 280, height: 55}} onPress={() => handleSuggestion(item['name'], item['id'].toString())}>
                             <View>
-                                <Text style={{fontFamily: "Inter", fontStyle: "normal", fontWeight: "normal", fontSize: 14, lineHeight: 18, display: "flex", alignItems: "center", color: "#424B5A", position: "absolute"}}>
+                                <Text style={{fontFamily: "Inter", fontStyle: "normal", fontWeight: "normal", fontSize: 14, lineHeight: 18, display: "flex", alignItems: "center", color: "#424B5A", 
+                                position: "absolute"}}>
                                     {item['name']}
                                 </Text>
                             </View>

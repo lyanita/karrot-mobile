@@ -35,11 +35,9 @@ const Navigation = () => {
     const [login, setLogin] = useState(false);
     const dispatch = useDispatch();
     const user = useSelector((state:any) => state.user);
-    console.log(user);
-    const test = user[0].id > 0 ? true : false;
-
+    const userTest = user[0].id > 0 ? true : false;
     useEffect(() => {
-        setLogin(test);
+        setLogin(userTest);
     });
 
     return (
@@ -67,7 +65,6 @@ const Navigation = () => {
                     listeners={{tabPress: (e) => {
                         e.preventDefault();
                         dispatch(updateUser([{email:'', user_id: 0}])); 
-                        //setLogin(false);
                     }}}
                 />
             </Tab.Navigator>
