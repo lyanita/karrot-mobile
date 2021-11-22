@@ -93,9 +93,6 @@ const GroceryScreen = ({ navigation }: any) => {
         } catch (error) {
             console.error(error);
         } finally {
-            setCheckedItems((prevState) => ({
-                ...prevState, item_id: !checkedState
-            }));
             getData();
         }
     }, [checkedItems]);
@@ -132,7 +129,7 @@ const GroceryScreen = ({ navigation }: any) => {
             <View style={{flexDirection:"row"}}>
                 <View style={{flex:1, marginRight:5}}>
                     <TouchableOpacity style={{backgroundColor:'#EAF5F5', width:128, height:41, borderRadius:20, borderWidth:1, borderColor:"#2A9D8F", justifyContent:"center"}} 
-                    accessibilityLabel="Click to Add Item." onPress={() => navigation.navigate('Search')}>
+                    accessibilityLabel="Click to add an item." onPress={() => navigation.navigate('Search')}>
                         <Text style={{textAlign:"center", color:"#2A9D8F", fontStyle: "normal", fontWeight:"bold", fontFamily:"Inter", fontSize:13, lineHeight:18, alignItems:"center"}}>
                             ADD ITEM
                         </Text>
@@ -140,7 +137,7 @@ const GroceryScreen = ({ navigation }: any) => {
                 </View>
                 <View style={{flex:1, marginLeft:5}}>
                     <TouchableOpacity style={{backgroundColor:'#FFEDE9', width:128, height:41, borderRadius:20, borderWidth:1, borderColor:"#E76F51", justifyContent:"center"}} 
-                    accessibilityLabel="Click to Delete All Items." onPress={() => deleteAll()}>
+                    accessibilityLabel="Click to delete all items." onPress={() => deleteAll()}>
                         <Text style={{textAlign:"center", color:"#E76F51", fontStyle: "normal", fontWeight:"bold", fontFamily:"Inter", fontSize:13, lineHeight:18, alignItems:"center"}}>
                             DELETE ALL
                         </Text>

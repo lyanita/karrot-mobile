@@ -93,7 +93,7 @@ const SearchScreen = () => {
                     </View>
                     <View style={{flex:1, justifyContent: 'center', alignItems: 'center', width:71, height:43}}>
                         <TouchableOpacity style={{backgroundColor: '#FFEDE9', width: 71, height: 43, borderRadius: 5, borderWidth: 1, borderColor: "#E76F51", justifyContent: "center", alignItems: 'center'}} 
-                        accessibilityLabel="Click to Add an Item." onPress={() => addGroceryItem(search, itemID)}>
+                        accessibilityLabel="Click to add an item." onPress={() => addGroceryItem(search, itemID)}>
                             <Text style={{textAlign: "center", color: "#E76F51", fontStyle: "normal", fontWeight: "bold", fontFamily: "Inter", fontSize: 13, lineHeight: 18, alignItems: "center"}}>
                                 ADD
                             </Text>
