@@ -7,7 +7,7 @@ import {CheckBox, ThemeContext, ThemeProvider} from 'react-native-elements';
 import Svg, {Circle, Rect, Line} from 'react-native-svg';
 import axios from 'axios';
 
-import { RootStackParamList } from '../NavigationBar';
+import { RootStackParamList } from '../components/NavigationBar';
 
 const styles = StyleSheet.create({
     container: {

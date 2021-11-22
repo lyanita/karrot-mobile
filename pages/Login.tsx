@@ -8,8 +8,8 @@ import Svg, {Circle, Rect, Line} from 'react-native-svg';
 import axios from 'axios';
 
 import SignUpScreen from './SignUp';
-import { RootStackParamList } from '../NavigationBar';
-import { updateUser } from '../redux/authenticate';
+import { RootStackParamList } from '../components/NavigationBar';
+import { updateUser } from '../components/redux/authenticate';
 
 const styles = StyleSheet.create({
     container: {

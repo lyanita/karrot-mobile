@@ -7,10 +7,10 @@ import { useSelector, useDispatch } from 'react-redux';
 import { NavigationContainer, DefaultTheme } from '@react-navigation/native';
 import MaterialCommumityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
-import GroceryStack from "./pages/Groceries";
-import FridgeScreen from "./pages/Fridge";
-import RecipeScreen from "./pages/Recipes";
-import LoginScreen from "./pages/Login";
+import GroceryStack from "../pages/Groceries";
+import FridgeScreen from "../pages/Fridge";
+import RecipeScreen from "../pages/Recipes";
+import LoginScreen from "../pages/Login";
 import { updateUser } from './redux/authenticate';
 
 const containerTheme = {

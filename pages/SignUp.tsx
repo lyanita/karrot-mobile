@@ -6,7 +6,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import axios from 'axios';
 
 import { LoginStackParamList } from './Login';
-import { updateUser } from '../redux/authenticate';
+import { updateUser } from '../components/redux/authenticate';
 
 const styles = StyleSheet.create({
     container: {
@@ -37,11 +37,6 @@ const SignUpScreen = () => {
             const response = await axios.post(`https://food-ping.herokuapp.com/addUser?email=${email}`);
             console.log(response);
             let res:any = response;
-            /*if (res['data'].length > 0) {
-                dispatch(updateUser(res['data'][0]));
-            } else {
-                setError('Username/Email invalid. Please try again.');
-            }*/
         } catch (error:any) {
             console.error(error);
             setError(error);
