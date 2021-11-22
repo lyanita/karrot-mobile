@@ -3,8 +3,11 @@ import { Text, View, ScrollView, ActivityIndicator, FlatList, TextInput, Button,
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 import { createNativeStackNavigator, NativeStackScreenProps } from '@react-navigation/native-stack';
 import { useSelector, useDispatch } from 'react-redux';
+import {CheckBox, ThemeContext, ThemeProvider} from 'react-native-elements';
+import Svg, {Circle, Rect, Line} from 'react-native-svg';
 import axios from 'axios';
 
+import SignUpScreen from './SignUp';
 import { RootStackParamList } from '../NavigationBar';
 import { updateUser } from '../redux/authenticate';
 
@@ -18,9 +21,26 @@ const styles = StyleSheet.create({
 });
 
 type ScreenNavigationProp = NativeStackScreenProps<RootStackParamList, 'Logout'>;
+
 const Stack = createNativeStackNavigator();
 
-const LoginScreen = ({ navigation }: ScreenNavigationProp) => {
+const LoginStack = () => {
+    return (
+        <Stack.Navigator screenOptions={{headerShown: false}}>
+            <Stack.Screen name="Login" component={LoginScreen} />
+            <Stack.Screen name="SignUp" component={SignUpScreen} />
+        </Stack.Navigator>
+    )
+}
+
+export type LoginStackParamList = {
+    Login: undefined,
+    SignUp: undefined
+}
+
+type LoginNavigationProp = NativeStackScreenProps<LoginStackParamList, 'Login'>;
+
+const LoginScreen = ({ navigation }: any) => {
     const [error, setError] = React.useState('');
     const firstRender = useRef(true);
     useEffect(() => {
@@ -61,12 +81,22 @@ const LoginScreen = ({ navigation }: ScreenNavigationProp) => {
                 onChangeText={setUsername}
                 style={styles.container}
             />
-            <Button color='#2A9D8F' accessibilityLabel="Click to Login." title="Sign in" onPress={() => verifyUser(username)} />
+            <Button color='#2A9D8F' accessibilityLabel="Click to login." title="Sign in" onPress={() => verifyUser(username)} />
             <Text>{error}</Text>
+            <View style={{flexDirection:"row"}}>
+                <View style={{flex:1, marginRight:5}}>
+                    <TouchableOpacity style={{backgroundColor:'#EAF5F5', width:128, height:41, borderRadius:20, borderWidth:1, borderColor:"#2A9D8F", justifyContent:"center"}} 
+                    accessibilityLabel="Click to create a new account." onPress={() => navigation.navigate('SignUp')}>
+                        <Text style={{textAlign:"center", color:"#2A9D8F", fontStyle: "normal", fontWeight:"bold", fontFamily:"Inter", fontSize:13, lineHeight:18, alignItems:"center"}}>
+                            SIGN UP
+                        </Text>
+                    </TouchableOpacity>
+                </View>
+            </View>
         </View>
         </SafeAreaView>
         </ScrollView>
     )
 }
 
-export default LoginScreen;
+export default LoginStack;
