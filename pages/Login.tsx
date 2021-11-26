@@ -1,5 +1,5 @@
 import React, { useCallback, useContext, useEffect, useRef, useState, useMemo } from 'react';
-import { Text, View, ScrollView, ActivityIndicator, FlatList, TextInput, Button, StyleSheet, TouchableOpacity, TouchableWithoutFeedback } from 'react-native';
+import { Text, View, ScrollView, ActivityIndicator, FlatList, TextInput, Button, StyleSheet, TouchableOpacity, TouchableWithoutFeedback, Linking } from 'react-native';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 import { createNativeStackNavigator, NativeStackScreenProps } from '@react-navigation/native-stack';
 import { useSelector, useDispatch } from 'react-redux';
@@ -10,6 +10,7 @@ import axios from 'axios';
 import SignUpScreen from './SignUp';
 import { RootStackParamList } from '../components/NavigationBar';
 import { updateUser } from '../components/redux/authenticate';
+import { validateEmail } from '../utils/validator';
 
 const styles = StyleSheet.create({
     container: {
@@ -55,11 +56,16 @@ const LoginScreen = ({ navigation }: any) => {
     
     const verifyUser = async (email:any) => {
         try {
-            const response = await axios.get(`https://food-ping.herokuapp.com/getUser?email=${email}`);
-            console.log(response);
-            let res:any = response;
-            if (res['data'].length > 0) {
-                dispatch(updateUser(res['data'][0]));
+            const emailValidate = validateEmail(email);
+            if (emailValidate) {
+                const response = await axios.get(`https://food-ping.herokuapp.com/getUser?email=${email}`);
+                console.log(response);
+                let res:any = response;
+                if (res['data'].length > 0) {
+                    dispatch(updateUser(res['data'][0]));
+                } else {
+                    setError('Username/Email invalid. Please try again.');
+                }
             } else {
                 setError('Username/Email invalid. Please try again.');
             }
@@ -67,7 +73,7 @@ const LoginScreen = ({ navigation }: any) => {
             console.error(error);
             setError(error);
         } finally {
-            
+            //add something here
         }
     }
     
@@ -75,6 +81,7 @@ const LoginScreen = ({ navigation }: any) => {
         <ScrollView>
         <SafeAreaView>
         <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center'}}>
+            <Text>{error}</Text>
             <TextInput
                 placeholder="Username/Email"
                 value={username}
@@ -82,15 +89,16 @@ const LoginScreen = ({ navigation }: any) => {
                 style={styles.container}
             />
             <Button color='#2A9D8F' accessibilityLabel="Click to login." title="Sign in" onPress={() => verifyUser(username)} />
-            <Text>{error}</Text>
             <View style={{flexDirection:"row"}}>
-                <View style={{flex:1, marginRight:5}}>
-                    <TouchableOpacity style={{backgroundColor:'#EAF5F5', width:128, height:41, borderRadius:20, borderWidth:1, borderColor:"#2A9D8F", justifyContent:"center"}} 
-                    accessibilityLabel="Click to create a new account." onPress={() => navigation.navigate('SignUp')}>
-                        <Text style={{textAlign:"center", color:"#2A9D8F", fontStyle: "normal", fontWeight:"bold", fontFamily:"Inter", fontSize:13, lineHeight:18, alignItems:"center"}}>
-                            SIGN UP
-                        </Text>
-                    </TouchableOpacity>
+                <View style={{flexDirection:"row", flex:1, marginRight:5}}>
+                    <Text style={{color:"#C2D1D9", fontFamily:"Inter", fontStyle:"normal", fontWeight:"bold", fontSize:12, 
+                    lineHeight: 18, display:"flex", alignItems:"center", textAlign:"center"}}>
+                        Don't have an account? </Text>
+                    <Text style={{color:"#C2D1D9", fontFamily:"Inter", fontStyle:"normal", fontWeight:"bold", fontSize:12, 
+                    lineHeight: 18, display:"flex", alignItems:"center", textAlign:"center"}} 
+                    onPress={() => navigation.navigate('SignUp')}>
+                        Sign up here.
+                    </Text>
                 </View>
             </View>
         </View>
