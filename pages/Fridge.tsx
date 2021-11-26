@@ -55,7 +55,7 @@ const FridgeScreen = ({ navigation }: any) => {
         if (response.indexOf("Invalid") === -1) {
             setData(response);
             setCheckedData(response);
-            dispatch(updateInventory(response.data));
+            dispatch(updateInventory(response));
         } else {
             setInventoryError();
         }

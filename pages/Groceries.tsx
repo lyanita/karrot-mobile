@@ -73,7 +73,7 @@ const GroceryScreen = ({ navigation }: any) => {
         if (response.indexOf("Invalid") === -1) {
             setData(response);
             setCheckedData(response);
-            dispatch(updateList(response.data));
+            dispatch(updateList(response));
         } else {
             setGroceryError();
         }
