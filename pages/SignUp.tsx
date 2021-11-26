@@ -21,7 +21,7 @@ const styles = StyleSheet.create({
 
 type LoginNavigationProp = NativeStackScreenProps<LoginStackParamList, 'SignUp'>;
 
-const SignUpScreen = () => { 
+const SignUpScreen = ({ navigation }: any) => { 
     const [error, setError] = React.useState('');
     const firstRender = useRef(true);
     useEffect(() => {
@@ -38,8 +38,13 @@ const SignUpScreen = () => {
         try {
             const emailValidate = validateEmail(email);
             if (emailValidate) {
-                const response = await addUser(email);
+                const response:any = await addUser(email);
                 console.log(response);
+                if (response.indexOf("exists") === -1) {
+                    setError('');
+                } else {
+                    setError(response);
+                }
             } else {
                 setError("Not a valid email.")
             }
@@ -61,6 +66,11 @@ const SignUpScreen = () => {
             />
             <Button color='#2A9D8F' accessibilityLabel="Click to create a new account." title="Submit" onPress={() => createUser(username)} />
             <Text>{error}</Text>
+            <Text style={{color:"#C2D1D9", fontFamily:"Inter", fontStyle:"normal", fontWeight:"bold", fontSize:12, 
+                lineHeight: 18, display:"flex", alignItems:"center", textAlign:"center"}} 
+                onPress={() => navigation.navigate('Login')}>
+                    Back to login.
+            </Text>
         </View>
         </SafeAreaView>
         </ScrollView>
