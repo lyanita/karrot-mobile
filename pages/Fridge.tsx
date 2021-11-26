@@ -8,6 +8,7 @@ import Svg, {Circle, Rect, Line} from 'react-native-svg';
 import axios from 'axios';
 
 import { RootStackParamList } from '../components/NavigationBar';
+import { updateInventory } from '../components/redux/inventory';
 
 const styles = StyleSheet.create({
     container: {
@@ -37,6 +38,8 @@ const FridgeScreen = ({ navigation }: any) => {
     const [isLoading, setLoading] = useState(true);
     const user = useSelector((state:any) => state.user);
     let user_id = user[0].id;
+    const dispatch = useDispatch();
+
     const current_date:any = new Date();
     const getData = async() => {
         try {
@@ -48,6 +51,7 @@ const FridgeScreen = ({ navigation }: any) => {
                 checked[element['inventory_item_id']] = false;
             });
             setCheckedItems(checked);
+            dispatch(updateInventory(json));
         } catch (error) {
             console.error(error);
             var fridge_dict:any = {}
@@ -60,6 +64,7 @@ const FridgeScreen = ({ navigation }: any) => {
         }
     }
 
+    //move to utils folder
     const expiry = (expiry_date:any) => {
         const new_date:any = new Date(expiry_date);
         const date_range = Math.floor((new_date - current_date) / (1000*60*60*24));

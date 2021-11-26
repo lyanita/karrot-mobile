@@ -1,12 +1,12 @@
 import { createStore, combineReducers } from 'redux';
+import { user } from './authenticate';
+import { inventory } from './inventory';
+import { list } from './list';
 
-const store = createStore(() => ({
-    user: [
-        {
-            email: '',
-            id: 0
-        }
-    ]
-}));
+const storeContext = combineReducers({
+    user,
+    inventory,
+    list
+});
 
-export default store;
+export default storeContext;

@@ -9,6 +9,7 @@ import axios from 'axios';
 
 import SearchScreen from './Search';
 import { RootStackParamList } from '../components/NavigationBar';
+import { updateList } from '../components/redux/list';
 
 const styles = StyleSheet.create({
     container: {
@@ -56,6 +57,8 @@ const GroceryScreen = ({ navigation }: any) => {
     const [isLoading, setLoading] = useState(true);
     const user = useSelector((state:any) => state.user);
     let user_id = user[0].id;
+    const dispatch = useDispatch();
+
     const getData = async() => {
         try {
             const response = await fetch(`https://food-ping.herokuapp.com/getGroceries?user_id=${user_id}`);
@@ -70,6 +73,7 @@ const GroceryScreen = ({ navigation }: any) => {
                 }
             });
             setCheckedItems(checked);
+            dispatch(updateList(json));
         } catch (error) {
             console.error(error);
             var grocery_dict:any = {}
@@ -97,6 +101,7 @@ const GroceryScreen = ({ navigation }: any) => {
         }
     }, [checkedItems]);
 
+    //combine delete functions together to reduce redundancies
     const deleteItem = async (user_id:number, item_id:number) => {
         try {
             const response = await axios.put(`https://food-ping.herokuapp.com/editDisplayTag?tag=deleted&user_id=${user_id}&item_id=${item_id}`);

@@ -1,5 +1,3 @@
-import { combineReducers } from 'redux';
-
 const UPDATE_USER = 'UPDATE_USER';
 
 export const updateUser = (user) => {
@@ -16,7 +14,7 @@ const defaultUser = [
     }
 ];
 
-const user = (state=defaultUser, action) => {
+export const user = (state=defaultUser, action) => {
     switch (action.type) {
         case UPDATE_USER:
             return [
@@ -30,9 +28,3 @@ const user = (state=defaultUser, action) => {
             return state;
     }
 }
-
-const userApp = combineReducers({
-    user
-});
-
-export default userApp;

@@ -7,9 +7,9 @@ import { Provider, connect } from "react-redux";
 import { createStore } from 'redux';
 
 import Navigation from "./components/NavigationBar";
-import userApp from './components/redux/authenticate';
+import storeContext from './components/redux/store';
 
-const store = createStore(userApp);
+const store = createStore(storeContext);
 
 function App() {
   return (
