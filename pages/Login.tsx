@@ -10,6 +10,7 @@ import axios from 'axios';
 import SignUpScreen from './SignUp';
 import { RootStackParamList } from '../components/NavigationBar';
 import { updateUser } from '../components/redux/authenticate';
+import { getUser } from '../utils/api';
 import { validateEmail } from '../utils/validator';
 
 const styles = StyleSheet.create({
@@ -58,11 +59,9 @@ const LoginScreen = ({ navigation }: any) => {
         try {
             const emailValidate = validateEmail(email);
             if (emailValidate) {
-                const response = await axios.get(`https://food-ping.herokuapp.com/getUser?email=${email}`);
-                console.log(response);
-                let res:any = response;
-                if (res['data'].length > 0) {
-                    dispatch(updateUser(res['data'][0]));
+                const response:any = await getUser(email);
+                if (response.length > 0) {
+                    dispatch(updateUser(response[0]));
                 } else {
                     setError('Username/Email invalid. Please try again.');
                 }
@@ -72,9 +71,7 @@ const LoginScreen = ({ navigation }: any) => {
         } catch (error:any) {
             console.error(error);
             setError(error);
-        } finally {
-            //add something here
-        }
+        } 
     }
     
     return (

@@ -9,6 +9,8 @@ import axios from 'axios';
 
 import { RootStackParamList } from '../components/NavigationBar';
 import { updateInventory } from '../components/redux/inventory';
+import { getInventory, editInventoryTag, editUsageTag } from '../utils/api';
+import { expiry } from '../utils/expiry';
 
 const styles = StyleSheet.create({
     container: {
@@ -24,7 +26,7 @@ type ScreenNavigationProp = NativeStackScreenProps<RootStackParamList, 'Fridge'>
 const FridgeScreen = ({ navigation }: any) => {
     const [data, setData] = useState([]);
     useEffect(() => {
-        getData();
+        getInventoryData();
     }, []);
     const [checkedItems, setCheckedItems] = useState([]);
     const firstRender = useRef(true);
@@ -40,36 +42,43 @@ const FridgeScreen = ({ navigation }: any) => {
     let user_id = user[0].id;
     const dispatch = useDispatch();
 
-    const current_date:any = new Date();
-    const getData = async() => {
-        try {
-            const response = await fetch(`https://food-ping.herokuapp.com/getInventory?user_id=${user_id}`);
-            const json = await response.json();
-            setData(json);
-            let checked: any = {};
-            json.forEach((element:any) => {
-                checked[element['inventory_item_id']] = false;
-            });
-            setCheckedItems(checked);
-            dispatch(updateInventory(json));
-        } catch (error) {
-            console.error(error);
-            var fridge_dict:any = {}
-            let error_message: string = "Your fridge is empty";
-            fridge_dict["inventory_item_name"] = error_message;
-            setData(fridge_dict);
-        } finally {
-            console.log(data);
-            setLoading(false);
+    const setInventoryError = () => {
+        var fridge_dict:any = {}
+        let error_message: string = "Your fridge is empty";
+        fridge_dict["inventory_item_name"] = error_message;
+        var fridge_arr:any = [];
+        fridge_arr.push(fridge_dict);
+        setData(fridge_arr);
+    }
+
+    const setInventoryData = (response:any) => {
+        if (response.indexOf("Invalid") === -1) {
+            setData(response);
+            setCheckedData(response);
+            dispatch(updateInventory(response.data));
+        } else {
+            setInventoryError();
         }
     }
 
-    //move to utils folder
-    const expiry = (expiry_date:any) => {
-        const new_date:any = new Date(expiry_date);
-        const date_range = Math.floor((new_date - current_date) / (1000*60*60*24));
-        console.log(date_range);
-        return date_range;
+    const setCheckedData = (response:any) => {
+        let checked:any = {};
+        response.forEach((element:any) => {
+            checked[element['inventory_item_id']] = false;
+        });
+        setCheckedItems(checked);
+    }
+
+    const getInventoryData = async() => {
+        try {
+            const response:any = await getInventory(user_id);
+            console.log(response);
+            setInventoryData(response);
+        } catch (error) {
+            console.error(error);
+        } finally {
+            setLoading(false);
+        }
     }
 
     const handleChange = useCallback(async (item) => {
@@ -89,16 +98,16 @@ const FridgeScreen = ({ navigation }: any) => {
         let item_ids = checked_data.join();
         try {
             if (tag === "used") {
-                const response = await axios.put(`https://food-ping.herokuapp.com/editUsageTag?tag=used&user_id=${user_id}&item_id=${item_ids}`);
+                const response = await editUsageTag(user_id, item_ids, "used");
                 console.log(response);
             } else if (tag === "tossed") {
-                const response = await axios.put(`https://food-ping.herokuapp.com/editUsageTag?tag=tossed&user_id=${user_id}&item_id=${item_ids}`);
+                const response = await editUsageTag(user_id, item_ids, "tossed");
                 console.log(response);
             }
         } catch (error) {
             console.error(error);
         } finally {
-            getData();
+            getInventoryData();
         }
     }
 

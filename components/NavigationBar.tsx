@@ -44,6 +44,7 @@ const Navigation = () => {
         login ? <NavigationContainer theme={containerTheme}>
             <Tab.Navigator initialRouteName="Groceries" screenOptions={({ route }) => ({ tabBarIcon: ({ focused, color, size}) => {
                 let iconName: any;
+                //update this section to utilize custom icons
                 if (route.name === 'Groceries') {
                     iconName = focused ? 'view-list' : 'view-list';
                 } else if (route.name === 'Fridge') {
@@ -64,7 +65,7 @@ const Navigation = () => {
                 <Tab.Screen name="Logout" component={LoginScreen} 
                     listeners={{tabPress: (e) => {
                         e.preventDefault();
-                        dispatch(updateUser([{email:'', user_id: 0}])); 
+                        dispatch(updateUser([{email:'', user_id: 0}])); //resets user to scrub redux
                     }}}
                 />
             </Tab.Navigator>

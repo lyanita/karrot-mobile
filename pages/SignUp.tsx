@@ -7,6 +7,8 @@ import axios from 'axios';
 
 import { LoginStackParamList } from './Login';
 import { updateUser } from '../components/redux/authenticate';
+import { addUser } from '../utils/api';
+import { validateEmail } from '../utils/validator';
 
 const styles = StyleSheet.create({
     container: {
@@ -34,14 +36,16 @@ const SignUpScreen = () => {
 
     const createUser = async (email:any) => {
         try {
-            const response = await axios.post(`https://food-ping.herokuapp.com/addUser?email=${email}`);
-            console.log(response);
-            let res:any = response;
+            const emailValidate = validateEmail(email);
+            if (emailValidate) {
+                const response = await addUser(email);
+                console.log(response);
+            } else {
+                setError("Not a valid email.")
+            }
         } catch (error:any) {
             console.error(error);
             setError(error);
-        } finally {
-            
         }
     }
 

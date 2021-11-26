@@ -8,6 +8,7 @@ import Svg, {Circle, Rect, Line} from 'react-native-svg';
 import axios from 'axios';
 
 import { GroceryStackParamList } from './Groceries';
+import { addGrocery, searchItem } from '../utils/api';
 
 type GroceryNavigationProp = NativeStackScreenProps<GroceryStackParamList, 'Search'>;
 
@@ -22,14 +23,13 @@ const SearchScreen = () => {
     const [itemID, setItemID] = useState('');
     const user = useSelector((state:any) => state.user);
     let user_id = user[0].id;
+    
     const getData = async() => {
         try {
-            const response:any = await axios.get('https://food-ping.herokuapp.com/searchItem', {
-                params: { item: "fresh" },
-              });
-            console.log(response['data']);
-            setData(response['data']);
-            setSuggestions(response['data']);
+            const response:any = await searchItem();
+            console.log(response);
+            setData(response);
+            setSuggestions(response);
         } catch (error) {
             console.error(error);
         } finally {
@@ -38,7 +38,6 @@ const SearchScreen = () => {
     }
 
     const handleChange = (entry:any) => {
-        console.log(entry.text);
         let items:any = data;
         let matches:any = [];
         if (entry.text.length > 0) {
@@ -46,9 +45,7 @@ const SearchScreen = () => {
                 const regex = new RegExp(`${entry.text}`, "gi");
                 return item['name'].match(regex);
             });
-            console.log(matches);
             setSuggestions(matches);
-            console.log(suggestions);
         }
         setSearch(entry.text);
     }
@@ -61,12 +58,10 @@ const SearchScreen = () => {
 
     const addGroceryItem = async (item_name:string, query_id:string) => {
         try {
-            const response = await axios.post(`https://food-ping.herokuapp.com/addGroceryItem?user_id=${user_id}&item_name=${item_name}&query_id=${query_id}`);
+            const response = await addGrocery(user_id, item_name, query_id);
             console.log(response);
         } catch (error) {
             console.error(error);
-        } finally {
-
         }
     }
 

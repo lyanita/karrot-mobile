@@ -10,6 +10,7 @@ import axios from 'axios';
 import SearchScreen from './Search';
 import { RootStackParamList } from '../components/NavigationBar';
 import { updateList } from '../components/redux/list';
+import { getGrocery, editGroceryTag, editDisplayTag } from '../utils/api';
 
 const styles = StyleSheet.create({
     container: {
@@ -43,7 +44,7 @@ type GroceryNavigationProp = NativeStackScreenProps<GroceryStackParamList, 'List
 const GroceryScreen = ({ navigation }: any) => {
     const [data, setData] = useState([]);
     useEffect(() => {
-        getData();
+        getGroceryData();
     }, []);
     const [checkedItems, setCheckedItems] = useState([]);
     const firstRender = useRef(true);
@@ -59,27 +60,44 @@ const GroceryScreen = ({ navigation }: any) => {
     let user_id = user[0].id;
     const dispatch = useDispatch();
 
-    const getData = async() => {
+    const setGroceryError = () => {
+        var grocery_dict:any = {}
+        let error_message: string = "Your grocery list is empty";
+        grocery_dict["grocery_item_name"] = error_message;
+        var grocery_arr:any = [];
+        grocery_arr.push(grocery_dict);
+        setData(grocery_arr);
+    }
+
+    const setGroceryData = (response:any) => {
+        if (response.indexOf("Invalid") === -1) {
+            setData(response);
+            setCheckedData(response);
+            dispatch(updateList(response.data));
+        } else {
+            setGroceryError();
+        }
+    }
+
+    const setCheckedData = (response:any) => {
+        let checked:any = {};
+        response.forEach((element:any) => {
+            if (element['grocery_tag'] === "not bought") {
+                checked[element['grocery_item_id']] = false;
+            } else if (element['grocery_tag'] === "bought") {
+                checked[element['grocery_item_id']] = true;
+            }
+        });
+        setCheckedItems(checked);
+    }
+
+    const getGroceryData = async() => {
         try {
-            const response = await fetch(`https://food-ping.herokuapp.com/getGroceries?user_id=${user_id}`);
-            const json = await response.json();
-            setData(json);
-            let checked: any = {};
-            json.forEach((element:any) => {
-                if (element['grocery_tag'] === "not bought") {
-                    checked[element['grocery_item_id']] = false;
-                } else if (element['grocery_tag'] === "bought") {
-                    checked[element['grocery_item_id']] = true;
-                }
-            });
-            setCheckedItems(checked);
-            dispatch(updateList(json));
+            const response:any = await getGrocery(user_id);
+            console.log(response);
+            setGroceryData(response);
         } catch (error) {
             console.error(error);
-            var grocery_dict:any = {}
-            let error_message: string = "Your grocery list is empty";
-            grocery_dict["grocery_item_name"] = error_message;
-            setData(grocery_dict);
         } finally {
             setLoading(false);
         }
@@ -87,43 +105,36 @@ const GroceryScreen = ({ navigation }: any) => {
 
     const handleChange = useCallback(async (item) => {
         const item_id = item.grocery_item_id;
-        const user_id = item.user_id;
         let currentItems:any = checkedItems;
         let checkedState = currentItems[item_id];
         let tag = checkedState ? 'not bought':'bought';
         try {
-            const response = await axios.put(`https://food-ping.herokuapp.com/editGroceryTag?tag=${tag}&user_id=${user_id}&item_id=${item_id}`);
+            const response = await editGroceryTag(user_id, item_id, tag);
             console.log(response);
         } catch (error) {
             console.error(error);
         } finally {
-            getData();
+            getGroceryData();
         }
     }, [checkedItems]);
 
-    //combine delete functions together to reduce redundancies
-    const deleteItem = async (user_id:number, item_id:number) => {
-        try {
-            const response = await axios.put(`https://food-ping.herokuapp.com/editDisplayTag?tag=deleted&user_id=${user_id}&item_id=${item_id}`);
-            console.log(response);
-        } catch (error) {
-            console.error(error);
-        } finally {
-            getData();
-        }
-    }
 
-    const deleteAll = async () => {
-        let grocery_data = data.filter((item) => item['display_tag'] === 'not deleted');
-        let ids_arr = grocery_data.map(item => item['grocery_item_id']);
-        let item_ids = ids_arr.join();
+    const deleteItems = async(item_id:number=0) => {
         try {
-            const response = await axios.put(`https://food-ping.herokuapp.com/editDisplayTag?tag=deleted&user_id=${user_id}&item_id=${item_ids}`);
-            console.log(response);
+            if (item_id === 0) {
+                let grocery_data = data.filter((item) => item['display_tag'] === 'not deleted');
+                let ids_arr = grocery_data.map(item => item['grocery_item_id']);
+                let item_ids = ids_arr.join();
+                const response = await editDisplayTag(user_id, item_ids, "deleted");
+                console.log(response);
+            } else {
+                const response = await editDisplayTag(user_id, item_id, "deleted");
+                console.log(response);
+            }
         } catch (error) {
             console.error(error);
         } finally {
-            getData();
+            getGroceryData();
         }
     }
 
@@ -142,7 +153,7 @@ const GroceryScreen = ({ navigation }: any) => {
                 </View>
                 <View style={{flex:1, marginLeft:5}}>
                     <TouchableOpacity style={{backgroundColor:'#FFEDE9', width:128, height:41, borderRadius:20, borderWidth:1, borderColor:"#E76F51", justifyContent:"center"}} 
-                    accessibilityLabel="Click to delete all items." onPress={() => deleteAll()}>
+                    accessibilityLabel="Click to delete all items." onPress={() => deleteItems()}>
                         <Text style={{textAlign:"center", color:"#E76F51", fontStyle: "normal", fontWeight:"bold", fontFamily:"Inter", fontSize:13, lineHeight:18, alignItems:"center"}}>
                             DELETE ALL
                         </Text>
@@ -167,7 +178,7 @@ const GroceryScreen = ({ navigation }: any) => {
                                         <Rect width="12.4565" height="2.43489" rx="1.21744" transform="matrix(0.53413 -0.845402 0.826606 0.56278 6.73438 14.5308)" fill="white"/>
                                 </Svg>}>
                             </CheckBox>
-                            <TouchableOpacity style={{flex:1, justifyContent:"center"}} onPress={() => deleteItem(item['user_id'], item['grocery_item_id'],)}>
+                            <TouchableOpacity style={{flex:1, justifyContent:"center"}} onPress={() => deleteItems(item['grocery_item_id'],)}>
                                 <Svg width="16" height="15" viewBox="0 0 16 15" fill="none">
                                     <Line x1="13.7027" y1="1.4106" x2="2.41794" y2="12.7531" stroke="#2A9D8F" strokeWidth="4"/>
                                     <Line x1="13.7315" y1="12.7245" x2="2.38894" y2="1.43967" stroke="#2A9D8F" strokeWidth="4"/>
