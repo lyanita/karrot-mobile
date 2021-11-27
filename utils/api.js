@@ -32,6 +32,17 @@ export const searchItem = async () => {
     }
 }
 
+export const getRecipes = async (ingredients, number) => {
+    try {
+        const response = await axios.get(`https://food-ping.herokuapp.com/getRecipes?ingredients=${ingredients}&number=${number}`);
+        const json = await response.data;
+        console.log(json);
+        return json;
+    } catch (error) {
+        console.error(error);
+    }
+}
+
 export const getGrocery = async (user_id) => {
     try {
         const response = await axios.get(`https://food-ping.herokuapp.com/getGroceries?user_id=${user_id}`);
