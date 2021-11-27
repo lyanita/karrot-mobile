@@ -10,25 +10,34 @@ import axios from 'axios';
 import { GroceryStackParamList } from './Groceries';
 import { addGrocery, searchItem } from '../utils/api';
 
+const styles = StyleSheet.create({
+    container: {
+        backgroundColor: '#EFF2F4',
+        borderRadius: 3,
+        height: 41,
+        width: 299
+    }
+});
+
 type GroceryNavigationProp = NativeStackScreenProps<GroceryStackParamList, 'Search'>;
 
 const SearchScreen = () => {
-    const [data, setData] = useState([]);
-    useEffect(() => {
-        getData();
-    }, []);
-    const [search, setSearch] = React.useState('');
     const [isLoading, setLoading] = useState(true);
-    const [suggestions, setSuggestions] = useState([]);
-    const [itemID, setItemID] = useState('');
     const user = useSelector((state:any) => state.user);
     let user_id = user[0].id;
     
-    const getData = async() => {
+    const [searchData, setSearchData] = useState([]);
+    useEffect(() => {
+        getSearchData();
+    }, []);
+    const [search, setSearch] = React.useState('');
+    const [suggestions, setSuggestions] = useState([]);
+    const [itemID, setItemID] = useState('');
+    
+    const getSearchData = async() => {
         try {
             const response:any = await searchItem();
-            console.log(response);
-            setData(response);
+            setSearchData(response);
             setSuggestions(response);
         } catch (error) {
             console.error(error);
@@ -38,7 +47,7 @@ const SearchScreen = () => {
     }
 
     const handleChange = (entry:any) => {
-        let items:any = data;
+        let items:any = searchData;
         let matches:any = [];
         if (entry.text.length > 0) {
             let matches = items.filter((item:any) => {

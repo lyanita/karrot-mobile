@@ -24,7 +24,12 @@ const styles = StyleSheet.create({
 type ScreenNavigationProp = NativeStackScreenProps<RootStackParamList, 'Fridge'>;
 
 const FridgeScreen = ({ navigation }: any) => {
-    const [data, setData] = useState([]);
+    const [isLoading, setLoading] = useState(true);
+    const user = useSelector((state:any) => state.user);
+    let user_id = user[0].id;
+    const dispatch = useDispatch();
+
+    const [fridgeData, setFridgeData] = useState([]);
     useEffect(() => {
         getInventoryData();
     }, []);
@@ -37,10 +42,6 @@ const FridgeScreen = ({ navigation }: any) => {
         }
         console.log(checkedItems);
     }, [checkedItems]);
-    const [isLoading, setLoading] = useState(true);
-    const user = useSelector((state:any) => state.user);
-    let user_id = user[0].id;
-    const dispatch = useDispatch();
 
     const setInventoryError = () => {
         var fridge_dict:any = {}
@@ -48,12 +49,12 @@ const FridgeScreen = ({ navigation }: any) => {
         fridge_dict["inventory_item_name"] = error_message;
         var fridge_arr:any = [];
         fridge_arr.push(fridge_dict);
-        setData(fridge_arr);
+        setFridgeData(fridge_arr);
     }
 
     const setInventoryData = (response:any) => {
         if (response.indexOf("Invalid") === -1) {
-            setData(response);
+            setFridgeData(response);
             setCheckedData(response);
             dispatch(updateInventory(response));
         } else {
@@ -134,7 +135,7 @@ const FridgeScreen = ({ navigation }: any) => {
                 </View>
             </View>
             {isLoading ? <ActivityIndicator/> : (
-                <FlatList data={data.filter((item) => item['usage_tag'] === null)} keyExtractor={(item:any) => item['inventory_item_id'].toString()} renderItem={({item, index}) => {
+                <FlatList data={fridgeData.filter((item) => item['usage_tag'] === null)} keyExtractor={(item:any) => item['inventory_item_id'].toString()} renderItem={({item, index}) => {
                     return (
                         <View style={{flexDirection:"row"}}>
                             <CheckBox 

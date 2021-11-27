@@ -10,6 +10,7 @@ import axios from 'axios';
 import SignUpScreen from './SignUp';
 import { RootStackParamList } from '../components/NavigationBar';
 import { updateUser } from '../components/redux/authenticate';
+import { getUserProfile, getGroceryItems, getInventoryItems } from '../components/redux/context';
 import { getUser } from '../utils/api';
 import { validateEmail } from '../utils/validator';
 
@@ -56,17 +57,20 @@ const LoginScreen = ({ navigation }: any) => {
     const dispatch = useDispatch();
     
     const verifyUser = async (email:any) => {
+        var errorMessage = 'Invalid email. Please try again.';
         try {
             const emailValidate = validateEmail(email);
             if (emailValidate) {
-                const response:any = await getUser(email);
+                const response:any = await getUserProfile(email, dispatch);
                 if (response.length > 0) {
-                    dispatch(updateUser(response[0]));
+                    const user_id:number = response[0].user_id;
+                    getGroceryItems(user_id, dispatch);
+                    getInventoryItems(user_id, dispatch);
                 } else {
-                    setError('Username/Email invalid. Please try again.');
+                    setError(errorMessage);
                 }
             } else {
-                setError('Username/Email invalid. Please try again.');
+                setError(errorMessage);
             }
         } catch (error:any) {
             console.error(error);

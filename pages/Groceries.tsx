@@ -42,9 +42,14 @@ export type GroceryStackParamList = {
 type GroceryNavigationProp = NativeStackScreenProps<GroceryStackParamList, 'List'>;
 
 const GroceryScreen = ({ navigation }: any) => {
-    const [data, setData] = useState([]);
+    const [isLoading, setLoading] = useState(true);
+    const user = useSelector((state:any) => state.user);
+    let user_id = user[0].id;
+    const dispatch = useDispatch();
+    
+    const [groceryData, setGroceryData] = useState([]);
     useEffect(() => {
-        getGroceryData();
+        getListData();
     }, []);
     const [checkedItems, setCheckedItems] = useState([]);
     const firstRender = useRef(true);
@@ -55,27 +60,23 @@ const GroceryScreen = ({ navigation }: any) => {
         }
         console.log(checkedItems);
     }, [checkedItems]);
-    const [isLoading, setLoading] = useState(true);
-    const user = useSelector((state:any) => state.user);
-    let user_id = user[0].id;
-    const dispatch = useDispatch();
 
-    const setGroceryError = () => {
+    const setListError = () => {
         var grocery_dict:any = {}
         let error_message: string = "Your grocery list is empty";
         grocery_dict["grocery_item_name"] = error_message;
         var grocery_arr:any = [];
         grocery_arr.push(grocery_dict);
-        setData(grocery_arr);
+        setGroceryData(grocery_arr);
     }
 
-    const setGroceryData = (response:any) => {
+    const setListData = (response:any) => {
         if (response.indexOf("Invalid") === -1) {
-            setData(response);
+            setGroceryData(response);
             setCheckedData(response);
             dispatch(updateList(response));
         } else {
-            setGroceryError();
+            setListError();
         }
     }
 
@@ -91,11 +92,11 @@ const GroceryScreen = ({ navigation }: any) => {
         setCheckedItems(checked);
     }
 
-    const getGroceryData = async() => {
+    const getListData = async() => {
         try {
             const response:any = await getGrocery(user_id);
             console.log(response);
-            setGroceryData(response);
+            setListData(response);
         } catch (error) {
             console.error(error);
         } finally {
@@ -114,7 +115,7 @@ const GroceryScreen = ({ navigation }: any) => {
         } catch (error) {
             console.error(error);
         } finally {
-            getGroceryData();
+            getListData();
         }
     }, [checkedItems]);
 
@@ -122,7 +123,7 @@ const GroceryScreen = ({ navigation }: any) => {
     const deleteItems = async(item_id:number=0) => {
         try {
             if (item_id === 0) {
-                let grocery_data = data.filter((item) => item['display_tag'] === 'not deleted');
+                let grocery_data = groceryData.filter((item) => item['display_tag'] === 'not deleted');
                 let ids_arr = grocery_data.map(item => item['grocery_item_id']);
                 let item_ids = ids_arr.join();
                 const response = await editDisplayTag(user_id, item_ids, "deleted");
@@ -134,7 +135,7 @@ const GroceryScreen = ({ navigation }: any) => {
         } catch (error) {
             console.error(error);
         } finally {
-            getGroceryData();
+            getListData();
         }
     }
 
@@ -161,7 +162,7 @@ const GroceryScreen = ({ navigation }: any) => {
                 </View>
             </View>
             {isLoading ? <ActivityIndicator/> : (
-                <FlatList data={data.filter((item) => item['display_tag'] === 'not deleted')} keyExtractor={(item:any) => item['grocery_item_id'].toString()} renderItem={({item, index}) => {
+                <FlatList data={groceryData.filter((item) => item['display_tag'] === 'not deleted')} keyExtractor={(item:any) => item['grocery_item_id'].toString()} renderItem={({item, index}) => {
                     return (
                         <View style={{flexDirection:"row"}}>
                             <CheckBox 
